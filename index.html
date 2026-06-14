@@ -505,6 +505,13 @@
       </label>
       <input type="text" id="affUrl" placeholder="https://brain-market.com/..." />
     </div>
+    <div class="form-group aff-url-group">
+      <label>
+        公式LINE URL
+        <span class="hint-label">記事末尾にLINE登録への誘導が入ります（省略可）</span>
+      </label>
+      <input type="text" id="lineUrl" placeholder="https://lin.ee/..." />
+    </div>
   </div>
 
   <!-- 生成ボタン -->
@@ -529,6 +536,7 @@
 
     <div class="hint-box">
       ✓ {{AFFILIATE_URL}} はあなたのアフィリエイトURLに差し替えてください（未入力の場合）<br>
+      ✓ LINE URLを入れると記事末尾に公式LINE誘導が自動で入ります<br>
       ✓ 価格・数字・具体的なエピソードはあなた自身の情報に書き換えると効果が上がります<br>
       ✓ 生成後、冒頭1〜2段落だけ自分の言葉に直すと読者への刺さり方が変わります
     </div>
@@ -891,6 +899,7 @@ async function generateArticle() {
 
   const userContext = document.getElementById('userContext').value.trim();
   const affUrl = document.getElementById('affUrl').value.trim() || '{{AFFILIATE_URL}}';
+  const lineUrl = document.getElementById('lineUrl').value.trim();
   const angleData = ANGLE_PROMPTS[selectedAngle];
 
   if (!angleData) {
@@ -935,6 +944,7 @@ ${MEIKYO_KNOWLEDGE}
 ・価格は正直に書く（29,800円）。デメリットも書く（信頼につながる）
 ・noteにそのまま貼れる完成原稿として出力する
 ・アフィリエイトリンクは末尾に「👉 明鏡（Brain）：${affUrl}」の形式で配置する
+${lineUrl ? `・記事の一番最後（アフィリエイトリンクの後）に公式LINEへの誘導を入れる。形式：「---\n\n📩 もっと詳しく知りたい方へ\n\n私の公式LINEでは、AI副業・マーケの実践情報を配信しています。\n登録者限定で〇〇も無料でお渡しします（具体的な特典内容は文脈に合わせて考えて）。\n\n👉 公式LINE：${lineUrl}」` : ''}
 ・文字数：2,000〜2,800字（読み切れる長さ）`;
 
   const userContextSection = userContext
