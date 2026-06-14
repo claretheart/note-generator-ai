@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI × 収益化 note記事ジェネレーター</title>
+  <title>明鏡 × note記事ジェネレーター</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
       --accent: #00d4aa;
       --accent2: #7c5cfc;
+      --gold: #f5c842;
       --bg: #0a0a0f;
       --bg2: #12121a;
       --bg3: #1a1a26;
@@ -29,12 +30,12 @@
     }
 
     header {
-      padding: 20px 40px;
+      padding: 16px 40px;
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
-      gap: 16px;
-      background: rgba(10,10,15,0.95);
+      gap: 14px;
+      background: rgba(10,10,15,0.97);
       backdrop-filter: blur(12px);
       position: sticky;
       top: 0;
@@ -42,57 +43,128 @@
     }
 
     .logo {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: bold;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      background: linear-gradient(90deg, var(--gold), var(--accent));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
     .badge {
       padding: 3px 10px;
-      background: rgba(0,212,170,0.1);
-      border: 1px solid rgba(0,212,170,0.3);
+      background: rgba(245,200,66,0.1);
+      border: 1px solid rgba(245,200,66,0.3);
       border-radius: 100px;
       font-size: 11px;
-      color: var(--accent);
+      color: var(--gold);
       font-weight: bold;
     }
 
-    header p { font-size: 13px; color: var(--gray); margin-left: auto; }
+    header p { font-size: 12px; color: var(--gray); margin-left: auto; }
 
     .container {
-      max-width: 820px;
+      max-width: 760px;
       margin: 0 auto;
-      padding: 48px 24px 120px;
+      padding: 40px 20px 120px;
     }
 
+    /* APIキーカード */
+    .api-card {
+      background: var(--bg2);
+      border: 1px solid rgba(245,200,66,0.2);
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+
+    .api-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .api-card-header .label {
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      color: var(--gold);
+    }
+
+    .api-key-saved {
+      font-size: 11px;
+      color: var(--green);
+      margin-left: auto;
+      display: none;
+    }
+
+    .api-key-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .api-key-row input {
+      flex: 1;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 13px;
+      font-family: monospace;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .api-key-row input:focus { border-color: rgba(245,200,66,0.4); }
+
+    .btn-sm {
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--gray);
+      font-size: 12px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-sm.active { border-color: var(--gold); color: var(--gold); background: rgba(245,200,66,0.06); }
+
+    .api-note { font-size: 11px; color: var(--gray); margin-top: 8px; }
+    .api-note a { color: var(--accent); }
+
+    /* ヒーロー */
     .hero {
       text-align: center;
-      margin-bottom: 48px;
+      margin: 32px 0 36px;
     }
 
     .hero h2 {
-      font-size: 28px;
+      font-size: 26px;
       font-weight: bold;
-      margin-bottom: 10px;
       line-height: 1.4;
+      margin-bottom: 10px;
     }
 
     .hero h2 span {
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      background: linear-gradient(90deg, var(--gold), var(--accent));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
-    .hero p { font-size: 14px; color: var(--gray); }
+    .hero p { font-size: 13px; color: var(--gray); line-height: 1.8; }
 
+    /* カード */
     .card {
       background: var(--bg2);
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 28px;
-      margin-bottom: 16px;
+      padding: 24px;
+      margin-bottom: 14px;
     }
 
     .card-label {
@@ -101,19 +173,19 @@
       font-weight: bold;
       letter-spacing: 3px;
       text-transform: uppercase;
-      margin-bottom: 4px;
+      margin-bottom: 14px;
     }
 
-    .card h3 { font-size: 16px; margin-bottom: 18px; }
+    .card h3 { font-size: 15px; margin-bottom: 16px; }
 
-    /* タイプ選択 */
-    .type-grid {
+    /* アングル選択 */
+    .angle-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
 
-    .type-btn {
+    .angle-btn {
       background: var(--bg3);
       border: 1px solid var(--border);
       border-radius: 12px;
@@ -125,21 +197,20 @@
       color: var(--text);
     }
 
-    .type-btn:hover { border-color: rgba(0,212,170,0.4); }
+    .angle-btn:hover { border-color: rgba(245,200,66,0.35); }
 
-    .type-btn.active {
-      border-color: var(--accent);
-      background: rgba(0,212,170,0.08);
+    .angle-btn.active {
+      border-color: var(--gold);
+      background: rgba(245,200,66,0.06);
     }
 
-    .type-btn .type-icon { font-size: 22px; margin-bottom: 8px; }
-    .type-btn .type-name { font-size: 14px; font-weight: bold; margin-bottom: 4px; }
-    .type-btn .type-desc { font-size: 12px; color: var(--gray); line-height: 1.5; }
-
-    .type-btn.active .type-name { color: var(--accent); }
+    .angle-icon { font-size: 22px; margin-bottom: 8px; }
+    .angle-name { font-size: 13px; font-weight: bold; margin-bottom: 4px; }
+    .angle-desc { font-size: 11px; color: var(--gray); line-height: 1.5; }
+    .angle-btn.active .angle-name { color: var(--gold); }
 
     /* フォーム */
-    .form-group { margin-bottom: 18px; }
+    .form-group { margin-bottom: 16px; }
     .form-group:last-child { margin-bottom: 0; }
 
     label {
@@ -150,1048 +221,819 @@
       color: #ccc;
     }
 
-    .hint {
-      font-size: 12px;
-      color: var(--gray);
-      font-weight: normal;
-      margin-left: 6px;
-    }
+    .hint-label { font-size: 11px; color: var(--gray); font-weight: normal; margin-left: 6px; }
 
-    .required { color: var(--accent); margin-left: 4px; }
-
-    input[type="text"], textarea {
+    textarea {
       width: 100%;
       background: var(--bg3);
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 12px 14px;
       color: var(--text);
-      font-size: 14px;
+      font-size: 13px;
       font-family: inherit;
       outline: none;
       transition: border-color 0.2s;
       resize: vertical;
+      min-height: 80px;
     }
 
-    input[type="text"]:focus, textarea:focus {
-      border-color: rgba(0,212,170,0.5);
-    }
+    textarea:focus { border-color: rgba(0,212,170,0.4); }
 
-    textarea { min-height: 80px; }
-
-    /* 価格設定 */
-    .price-toggle {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-
-    .price-toggle-btn {
-      flex: 1;
-      padding: 12px;
+    /* アフィURLフォーム */
+    .aff-url-group input {
+      width: 100%;
+      background: var(--bg3);
       border: 1px solid var(--border);
       border-radius: 10px;
-      background: var(--bg3);
-      color: var(--gray);
-      font-size: 14px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: inherit;
-    }
-
-    .price-toggle-btn.active-free {
-      border-color: var(--green);
-      background: rgba(0,200,150,0.08);
-      color: var(--green);
-    }
-
-    .price-toggle-btn.active-paid {
-      border-color: var(--accent2);
-      background: rgba(124,92,252,0.08);
-      color: var(--accent2);
-    }
-
-    .price-select-row {
-      display: none;
-      align-items: center;
-      gap: 12px;
-      background: rgba(124,92,252,0.05);
-      border: 1px solid rgba(124,92,252,0.2);
-      border-radius: 10px;
-      padding: 14px;
-    }
-
-    .price-select-row.show { display: flex; }
-
-    .price-select-row label {
-      margin-bottom: 0;
-      color: #aaa;
+      padding: 10px 14px;
+      color: var(--text);
       font-size: 13px;
-      white-space: nowrap;
-    }
-
-    .price-chips {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .price-chip {
-      padding: 5px 14px;
-      border: 1px solid rgba(124,92,252,0.3);
-      border-radius: 100px;
-      background: transparent;
-      color: #aaa;
-      font-size: 13px;
-      cursor: pointer;
       font-family: inherit;
-      transition: all 0.2s;
+      outline: none;
+      transition: border-color 0.2s;
     }
-
-    .price-chip.active {
-      border-color: var(--accent2);
-      background: rgba(124,92,252,0.15);
-      color: var(--accent2);
-      font-weight: bold;
-    }
+    .aff-url-group input:focus { border-color: rgba(245,200,66,0.4); }
 
     /* 生成ボタン */
     .btn-generate {
       width: 100%;
       padding: 18px;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      background: linear-gradient(90deg, #c9a227, var(--gold), var(--accent));
       border: none;
       border-radius: 12px;
-      color: #fff;
+      color: #0a0a0f;
       font-size: 17px;
       font-weight: bold;
       cursor: pointer;
       transition: opacity 0.2s, transform 0.2s;
       font-family: inherit;
-      margin-top: 8px;
+      margin-top: 4px;
     }
 
     .btn-generate:hover { opacity: 0.88; transform: translateY(-2px); }
+    .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-    /* 出力 */
+    /* 出力エリア */
     #output { display: none; margin-top: 40px; }
 
-    .section-title {
-      font-size: 12px;
+    .output-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .output-header .section-title {
+      font-size: 11px;
       color: var(--accent);
       font-weight: bold;
       letter-spacing: 2px;
       text-transform: uppercase;
-      margin-bottom: 14px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--border);
     }
 
-    .output-block { margin-bottom: 32px; }
-
-    .title-item {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px 18px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 8px;
-      transition: border-color 0.2s;
-    }
-
-    .title-item:hover { border-color: rgba(0,212,170,0.4); }
-
-    .title-num {
-      width: 24px;
-      height: 24px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      font-weight: bold;
-      flex-shrink: 0;
-    }
-
-    .title-text { font-size: 14px; flex: 1; }
-
-    .copy-btn {
-      padding: 5px 12px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      background: transparent;
-      color: var(--gray);
-      font-size: 12px;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: inherit;
-      white-space: nowrap;
-    }
-
-    .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .copy-btn.copied { border-color: var(--green); color: var(--green); }
-
-    .btn-copy-all {
-      width: 100%;
-      padding: 14px;
-      background: rgba(0,212,170,0.08);
+    .btn-copy-article {
+      padding: 8px 18px;
+      background: rgba(0,212,170,0.1);
       border: 1px solid rgba(0,212,170,0.3);
-      border-radius: 10px;
+      border-radius: 8px;
       color: var(--accent);
-      font-size: 14px;
+      font-size: 13px;
       font-weight: bold;
       cursor: pointer;
-      transition: all 0.2s;
       font-family: inherit;
-      margin-bottom: 14px;
+      transition: all 0.2s;
     }
 
-    .btn-copy-all:hover { background: rgba(0,212,170,0.14); }
-    .btn-copy-all.copied { background: rgba(0,200,150,0.1); border-color: var(--green); color: var(--green); }
+    .btn-copy-article:hover { background: rgba(0,212,170,0.16); }
+    .btn-copy-article.copied { border-color: var(--green); color: var(--green); }
 
-    /* 章カード */
-    .chapter-item {
+    #articleOutput {
       background: var(--bg2);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      margin-bottom: 10px;
-    }
-
-    .chapter-header {
-      padding: 14px 18px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .chapter-badge {
-      padding: 2px 10px;
-      border-radius: 100px;
-      font-size: 11px;
-      font-weight: bold;
-      background: rgba(0,212,170,0.12);
-      color: var(--accent);
-      flex-shrink: 0;
-    }
-
-    .chapter-title { font-size: 14px; font-weight: bold; flex: 1; }
-
-    .chapter-copy {
-      padding: 5px 12px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      background: transparent;
-      color: var(--gray);
-      font-size: 12px;
-      cursor: pointer;
-      font-family: inherit;
-      transition: all 0.2s;
-      white-space: nowrap;
-    }
-
-    .chapter-copy:hover { border-color: var(--accent); color: var(--accent); }
-    .chapter-copy.copied { border-color: var(--green); color: var(--green); }
-
-    .chapter-prompt {
-      padding: 0 18px 16px;
-      font-size: 13px;
-      color: #bbb;
-      line-height: 1.7;
+      border-radius: 14px;
+      padding: 28px 32px;
+      font-size: 14px;
+      line-height: 2;
       white-space: pre-wrap;
-      background: rgba(255,255,255,0.02);
-      border-top: 1px solid var(--border);
-      margin-top: 0;
-      padding-top: 14px;
+      color: #e0e0e0;
+      min-height: 200px;
     }
 
-    /* 有料ライン */
-    .paid-line {
+    .streaming-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      background: var(--accent);
+      animation: blink 1s step-end infinite;
+      vertical-align: text-bottom;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .status-bar {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin: 16px 0;
-    }
-
-    .paid-line::before, .paid-line::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: rgba(124,92,252,0.4);
-    }
-
-    .paid-line-label {
-      padding: 5px 16px;
-      background: rgba(124,92,252,0.15);
-      border: 1px solid rgba(124,92,252,0.4);
-      border-radius: 100px;
+      gap: 10px;
+      padding: 10px 14px;
+      background: rgba(0,212,170,0.06);
+      border: 1px solid rgba(0,212,170,0.15);
+      border-radius: 8px;
+      margin-bottom: 12px;
       font-size: 12px;
-      font-weight: bold;
-      color: var(--accent2);
-      white-space: nowrap;
+      color: var(--accent);
     }
 
-    .chapter-item.paid-chapter {
-      border-color: rgba(124,92,252,0.3);
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 1.4s ease-in-out infinite;
     }
 
-    .chapter-item.paid-chapter .chapter-badge {
-      background: rgba(124,92,252,0.12);
-      color: var(--accent2);
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.7); }
     }
 
+    /* エラー */
+    .error-box {
+      background: rgba(255,107,107,0.08);
+      border: 1px solid rgba(255,107,107,0.3);
+      border-radius: 10px;
+      padding: 14px 18px;
+      color: var(--red);
+      font-size: 13px;
+      margin-bottom: 12px;
+      display: none;
+    }
+
+    /* ヒントボックス */
     .hint-box {
-      background: var(--bg3);
+      background: rgba(255,255,255,0.03);
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 14px 18px;
-      font-size: 13px;
+      font-size: 12px;
       color: var(--gray);
-      line-height: 1.8;
-      margin-top: 16px;
+      line-height: 2;
+      margin-top: 14px;
+    }
+
+    /* 明鏡バッジ */
+    .meikyo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      background: linear-gradient(90deg, rgba(245,200,66,0.12), rgba(0,212,170,0.08));
+      border: 1px solid rgba(245,200,66,0.25);
+      border-radius: 100px;
+      font-size: 11px;
+      color: var(--gold);
+      font-weight: bold;
+      margin-bottom: 16px;
     }
 
     @media (max-width: 600px) {
-      .type-grid { grid-template-columns: 1fr; }
-      header { padding: 16px 20px; }
-      header p { display: none; }
+      header { padding: 14px 16px; }
+      .container { padding: 24px 14px 80px; }
+      .hero h2 { font-size: 20px; }
+      .angle-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">AI × 収益化 note記事ジェネレーター</div>
-  <span class="badge">改良版</span>
-  <p>テーマを入れてClaude用プロンプトを生成</p>
+  <div class="logo">✨ 明鏡 × note ジェネレーター</div>
+  <div class="badge">AI生成</div>
+  <p>明鏡の内容を学習済み ｜ アフィリエイト記事を1クリック生成</p>
 </header>
 
 <div class="container">
 
+  <!-- APIキーカード -->
+  <div class="api-card">
+    <div class="api-card-header">
+      <span class="label">🔑 ANTHROPIC API KEY</span>
+      <span class="api-key-saved" id="apiKeySaved">✓ 保存済み</span>
+    </div>
+    <div class="api-key-row">
+      <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." autocomplete="off" />
+      <button class="btn-sm" id="btnSaveKey" onclick="saveApiKey()">保存</button>
+      <button class="btn-sm" id="btnToggleKey" onclick="toggleKeyVisibility()">表示</button>
+    </div>
+    <p class="api-note">
+      キーはブラウザのlocalStorageにのみ保存されます。
+      取得は <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a> から。
+    </p>
+  </div>
+
+  <!-- ヒーロー -->
   <div class="hero">
-    <h2>AIツール × 収益化に特化した<br /><span>note記事の章立てを自動生成</span></h2>
-    <p>4つの記事タイプ対応 ・ 有料ライン設定つき ・ Claudeプロンプトを章ごとに生成</p>
+    <div class="meikyo-badge">📖 明鏡（イケハヤ著）の内容を知識ベースとして搭載</div>
+    <h2>noteに貼れる<span>完成記事</span>を<br>1クリックで生成する</h2>
+    <p>
+      角度を選んで「生成」を押すだけ。Claude が明鏡の内容をベースに<br>
+      読者に価値を届けながら、自然に明鏡を紹介する記事を書きます。
+    </p>
   </div>
 
-  <!-- STEP 1: タイプ選択 -->
+  <!-- アングル選択 -->
   <div class="card">
-    <div class="card-label">Step 1</div>
-    <h3>記事タイプを選ぶ</h3>
-    <div class="type-grid" id="typeGrid">
-      <button class="type-btn active" data-type="実録系">
-        <div class="type-icon">📝</div>
-        <div class="type-name">実録系（Before/After）</div>
-        <div class="type-desc">使う前と後の変化を語る。共感・信頼を得やすい</div>
+    <div class="card-label">Step 1 — 記事の角度を選ぶ</div>
+    <div class="angle-grid" id="angleGrid">
+
+      <button class="angle-btn active" data-angle="ai-marketer" onclick="selectAngle(this)">
+        <div class="angle-icon">🤖</div>
+        <div class="angle-name">AIで稼げない本当の理由</div>
+        <div class="angle-desc">AIツール×収益化に行き詰まっている人向け。技術より先に学ぶべきマーケ知識を紹介</div>
       </button>
-      <button class="type-btn" data-type="ノウハウ系">
-        <div class="type-icon">📋</div>
-        <div class="type-name">ノウハウ3選系</div>
-        <div class="type-desc">「知っておくべき〇つのこと」形式。保存・拡散されやすい</div>
+
+      <button class="angle-btn" data-angle="sns-limit" onclick="selectAngle(this)">
+        <div class="angle-icon">📱</div>
+        <div class="angle-name">SNSフォロワーが増えても稼げない理由</div>
+        <div class="angle-desc">SNSを頑張っているのに収益化できない人へ。リストマーケへの転換を提案</div>
       </button>
-      <button class="type-btn" data-type="記録系">
-        <div class="type-icon">📅</div>
-        <div class="type-name">記録系（継続ログ）</div>
-        <div class="type-desc">〇日間・〇本続けた記録を公開。数字で信頼を得る</div>
+
+      <button class="angle-btn" data-angle="list-marketing" onclick="selectAngle(this)">
+        <div class="angle-icon">📋</div>
+        <div class="angle-name">リストマーケで自動収益化する方法</div>
+        <div class="angle-desc">仕組みを作って自動で稼ぎたい人向け。AI×リストマーケの組み合わせを解説</div>
       </button>
-      <button class="type-btn" data-type="テンプレ集系">
-        <div class="type-icon">📦</div>
-        <div class="type-name">テンプレ・ツール集系</div>
-        <div class="type-desc">すぐ使えるテンプレ・ツールをまとめる。ブックマーク狙い</div>
+
+      <button class="angle-btn" data-angle="launch" onclick="selectAngle(this)">
+        <div class="angle-icon">🚀</div>
+        <div class="angle-name">個人でも使えるローンチ戦略</div>
+        <div class="angle-desc">副業・個人事業の売上を一気に上げたい人へ。ローンチ設計の威力を紹介</div>
       </button>
-      <button class="type-btn" data-type="比較・検証系">
-        <div class="type-icon">⚖️</div>
-        <div class="type-name">比較・検証系</div>
-        <div class="type-desc">AIツール同士を実際に使って比べる。検索流入・判断迷い層に刺さる</div>
+
+      <button class="angle-btn" data-angle="community" onclick="selectAngle(this)">
+        <div class="angle-icon">👥</div>
+        <div class="angle-name">コミュニティで継続収益を作る</div>
+        <div class="angle-desc">毎月安定した収益が欲しい人向け。熱狂的ファンを生むコミュニティ設計</div>
       </button>
-      <button class="type-btn" data-type="失敗談系">
-        <div class="type-icon">😅</div>
-        <div class="type-name">失敗談系</div>
-        <div class="type-desc">失敗を正直に語る。共感・信頼を得やすく差別化しやすい</div>
+
+      <button class="angle-btn" data-angle="philosophy" onclick="selectAngle(this)">
+        <div class="angle-icon">🎯</div>
+        <div class="angle-name">マーケの本質を知らずに稼ごうとしていた</div>
+        <div class="angle-desc">今のやり方に行き詰まっている人へ。「変化を起こすこと」というマーケの真髄</div>
       </button>
-      <button class="type-btn" data-type="アフィリエイト記事" style="grid-column: 1 / -1;">
-        <div class="type-icon">💰</div>
-        <div class="type-name">アフィリエイト記事</div>
-        <div class="type-desc">商品・教材を自然に紹介してBrainアフィリエイト等に誘導。商品コンセプトを価値提供しながら購入を促す設計</div>
-      </button>
+
     </div>
   </div>
 
-  <!-- STEP 2: 記事情報 -->
+  <!-- 補足情報 -->
   <div class="card">
-    <div class="card-label">Step 2</div>
-    <h3>記事の情報を入力する</h3>
-
+    <div class="card-label">Step 2 — あなたの情報（任意）</div>
     <div class="form-group">
-      <label>メインテーマ<span class="required">*</span></label>
-      <input type="text" id="theme" placeholder="例: Claude Codeで毎日アプリを作り続けた話、AIを使って副業収入を作った話" />
+      <label>
+        あなた自身の体験・状況
+        <span class="hint-label">入れると記事の説得力が上がります（省略可）</span>
+      </label>
+      <textarea id="userContext" placeholder="例：AIツールを3ヶ月使ってきたが収益はゼロ。Xのフォロワーは300人ほどいる。副業で月5万円を目標にしている。明鏡を読んでリストマーケという概念を初めて知った。"></textarea>
     </div>
-
-    <div class="form-group">
-      <label>使ったAIツール・サービス<span class="hint">（具体名を入れると説得力UP）</span></label>
-      <input type="text" id="tools" placeholder="例: Claude Code、ChatGPT、Notion AI、Midjourney" />
-    </div>
-
-    <div class="form-group">
-      <label>具体的な変化・数字<span class="hint">（数字があるとタイトルに使える）</span></label>
-      <input type="text" id="numbers" placeholder="例: 制作時間が1週間→3時間に、月3万円の副収入ができた、30本のアプリを作った" />
-    </div>
-
-    <div class="form-group">
-      <label>書き手プロフィール<span class="hint">（どんな人が書くか）</span></label>
-      <input type="text" id="profile" placeholder="例: 個人開発者・フリーランス、プログラマーではない会社員" />
-    </div>
-
-    <div class="form-group">
-      <label>読者に持ち帰ってほしいこと</label>
-      <textarea id="takeaway" placeholder="例: AIツールは難しくない。まず1つ使ってみることで世界が変わると知ってほしい"></textarea>
-    </div>
-
-    <div class="form-group">
-      <label>LINEで配布している特典・オファー<span class="hint">（具体的に書くほどCTAが強くなる）</span></label>
-      <input type="text" id="lineOffer" placeholder="例: 案件の探し方 / そのまま使える提案文 / Claude Codeへの具体指示テンプレ（3点以内が理想）" />
+    <div class="form-group aff-url-group">
+      <label>
+        アフィリエイトURL
+        <span class="hint-label">記事末尾に挿入されます</span>
+      </label>
+      <input type="text" id="affUrl" placeholder="https://brain-market.com/..." />
     </div>
   </div>
 
-  <!-- STEP 2.5: アフィリエイト商品情報（アフィリエイト記事タイプ選択時のみ表示） -->
-  <div class="card" id="affiliateCard" style="display:none; border-color: rgba(255,200,0,0.3); background: rgba(255,200,0,0.04);">
-    <div class="card-label" style="color:#f0b400;">Affiliate</div>
-    <h3>紹介する商品の情報</h3>
-
-    <div class="form-group">
-      <label>商品名<span class="required">*</span></label>
-      <input type="text" id="affProduct" placeholder="例: 明鏡（イケハヤ）" />
-    </div>
-
-    <div class="form-group">
-      <label>商品の一言説明<span class="hint">（何が学べるか）</span></label>
-      <input type="text" id="affDesc" placeholder="例: マーケティングの根っこを学べる20万字超の教材（Brain）" />
-    </div>
-
-    <div class="form-group">
-      <label>価格<span class="hint">（読者への情報として）</span></label>
-      <input type="text" id="affPrice" placeholder="例: 29,800円（リリース特価。定価49,800円予定）" />
-    </div>
-
-    <div class="form-group">
-      <label>アフィリエイトリンクURL</label>
-      <input type="text" id="affUrl" placeholder="例: https://brain-market.com/u/xxxxx/b/yyyyy" />
-    </div>
-
-    <div class="form-group">
-      <label>商品の核心コンセプト<span class="hint">（記事内で価値提供に使う。2〜3個）</span></label>
-      <textarea id="affConcepts" placeholder="例:&#10;・マーケターとは変化を起こす人。Before→Afterを設計することが全て&#10;・認知→リストマーケティング→ローンチの3ステップで収益化する&#10;・コピーライティングより先に「誰の何を変えるか」を決める"></textarea>
-    </div>
-
-    <div class="form-group">
-      <label>こんな人に向いている<span class="hint">（購買層の絞り込み）</span></label>
-      <input type="text" id="affTarget" placeholder="例: AIで作れるけど売れない人、副業で0→1が出ていない人" />
-    </div>
-  </div>
-
-  <!-- STEP 3: 価格設定 -->
-  <div class="card">
-    <div class="card-label">Step 3</div>
-    <h3>価格を設定する</h3>
-
-    <div class="price-toggle">
-      <button class="price-toggle-btn" id="btnFree" onclick="setPrice('free')">無料で公開する</button>
-      <button class="price-toggle-btn active-paid" id="btnPaid" onclick="setPrice('paid')">有料記事にする</button>
-    </div>
-
-    <div class="price-select-row show" id="priceSelectRow">
-      <label>価格を選ぶ：</label>
-      <div class="price-chips" id="priceChips">
-        <button class="price-chip" data-price="100">100円</button>
-        <button class="price-chip" data-price="300">300円</button>
-        <button class="price-chip active" data-price="500">500円</button>
-        <button class="price-chip" data-price="980">980円</button>
-        <button class="price-chip" data-price="1500">1,500円</button>
-        <button class="price-chip" data-price="2000">2,000円</button>
-      </div>
-    </div>
-  </div>
-
-  <button class="btn-generate" onclick="generate()">📝 章立て＆Claudeプロンプトを生成する</button>
+  <!-- 生成ボタン -->
+  <div class="error-box" id="errorBox"></div>
+  <button class="btn-generate" id="btnGenerate" onclick="generateArticle()">
+    ✨ 記事を生成する
+  </button>
 
   <!-- 出力 -->
   <div id="output">
-
-    <div class="output-block">
-      <div class="section-title">タイトル候補</div>
-      <div id="titlesList"></div>
+    <div class="status-bar" id="statusBar" style="display:none;">
+      <div class="status-dot"></div>
+      <span id="statusText">Claudeが記事を生成中...</span>
     </div>
 
-    <div class="output-block" id="introBlock" style="display:none;">
-      <div class="section-title">購買意欲を掻き立てる導入部</div>
-      <div id="introFormula" style="font-size:12px; color:var(--accent2); margin-bottom:14px; padding:8px 14px; background:rgba(124,92,252,0.07); border:1px solid rgba(124,92,252,0.2); border-radius:8px;"></div>
-      <div id="introText" style="background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:22px 24px; font-size:14px; line-height:2; white-space:pre-wrap; color:#e0e0e0;"></div>
-      <button class="btn-copy-all" id="btnCopyIntro" onclick="copyIntro()" style="margin-top:10px;">
-        📋 導入部をコピー
-      </button>
-      <div class="hint-box" style="margin-top:12px;">
-        ✓ 有料ライン直前の一文が購入ボタンの背中を押す最重要ポイントです<br>
-        ✓ 【】内のプレースホルダーは実際の数字・内容に差し替えてください<br>
-        ✓ 記事タイプを変えて再生成するとフォーミュラも切り替わります
-      </div>
+    <div class="output-header">
+      <div class="section-title">生成された記事</div>
+      <button class="btn-copy-article" id="btnCopy" onclick="copyArticle()">📋 全文コピー</button>
     </div>
 
-    <div class="output-block">
-      <div class="section-title">章立て ＆ Claudeプロンプト</div>
-      <p style="font-size:13px; color:var(--gray); margin-bottom:14px;">
-        各章のプロンプトをコピーして
-        <a href="https://claude.ai" target="_blank" style="color:var(--accent);">claude.ai</a>
-        に貼り付けると章の本文が生成されます。
-      </p>
-      <button class="btn-copy-all" id="btnCopyAll" onclick="copyAllPrompts()">
-        📋 全章のプロンプトをまとめてコピー
-      </button>
-      <div id="chaptersList"></div>
-      <div class="hint-box">
-        ✓ 生成された文章は自分の言葉に書き直すと読者に伝わりやすくなります<br>
-        ✓ 数字・固有名詞は実際の値に必ず差し替えてください<br>
-        ✓ 最後の段落に「次回予告 or フォロー促し」を入れると継続読者が増えます
-      </div>
-    </div>
+    <div id="articleOutput"></div>
 
+    <div class="hint-box">
+      ✓ {{AFFILIATE_URL}} はあなたのアフィリエイトURLに差し替えてください（未入力の場合）<br>
+      ✓ 価格・数字・具体的なエピソードはあなた自身の情報に書き換えると効果が上がります<br>
+      ✓ 生成後、冒頭1〜2段落だけ自分の言葉に直すと読者への刺さり方が変わります
+    </div>
   </div>
 
 </div>
 
 <script>
-  // ===== タイプ選択 =====
-  let selectedType = '実録系';
-  document.querySelectorAll('.type-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      selectedType = btn.dataset.type;
-      document.getElementById('affiliateCard').style.display =
-        selectedType === 'アフィリエイト記事' ? 'block' : 'none';
-    });
-  });
+// =====================================================
+// 明鏡 知識ベース（システムプロンプトに埋め込む）
+// =====================================================
+const MEIKYO_KNOWLEDGE = `
+【あなたが読んで学んだ教材：明鏡】
+著者：イケハヤ（池田仁）— ブロガー・投資家・起業家。月間数百万PVのブログを運営し自らも多くのサービスを立ち上げてきた実践者。
+販売プラットフォーム：Brain（brain-market.com）
+価格：29,800円（リリース特価）→ 49,800円（定価）→ 最終98,000円
+ボリューム：20万字超、図解・動画つき、7章構成
+アフィリエイト：50%（1件あたり約14,900円〜の報酬）
 
-  // ===== 価格設定 =====
-  let isPaid = true;
-  let selectedPrice = 500;
+【明鏡の7章構成と核心内容】
 
-  function setPrice(mode) {
-    isPaid = mode === 'paid';
-    document.getElementById('btnFree').className = 'price-toggle-btn' + (isPaid ? '' : ' active-free');
-    document.getElementById('btnPaid').className = 'price-toggle-btn' + (isPaid ? ' active-paid' : '');
-    document.getElementById('priceSelectRow').className = 'price-select-row' + (isPaid ? ' show' : '');
+■ 第1〜2章：マーケティングとは何か／近代マーケティングの基礎
+マーケティングの本質は「変化を起こすこと」。
+商品を売ることではなく、人の認識・行動・人生を変えること。
+この定義を腹落ちさせるだけで、すべての施策の優先順位が変わる。
+近代マーケの基礎として「4P（製品・価格・場所・プロモーション）」を現代文脈で再解釈し、
+個人でも再現できる形で解説している。
+
+■ 第3章：マインドセット・哲学
+イケハヤ流の「与えて与えて与えまくる」哲学。
+コンテンツを「消耗品」ではなく「資産」として積み上げる考え方。
+短期的な売上より長期的な信頼を優先する。
+「嫌われる勇気」と発信の関係。受け手を変えようとしない発信が最も人を動かす。
+
+■ 第4章：リストマーケティング（AI時代の最重要スキル）
+SNSはアルゴリズムが変われば一瞬でリーチがゼロになる。
+「自分のメディア」＝リスト（メールリスト・LINE・Discord・Slackなど）への誘導が命。
+フォロワー1万人よりリスト1,000人のほうが圧倒的に稼げる。
+AIを活用すれば個人でも大規模なリストマーケを自動化できる。
+リスト獲得のための「リードマグネット」の設計法。
+
+■ 第5章：トークンマーケティング（最先端領域）
+Web3・トークンを使った新しいマーケ手法。
+顧客を「所有者・投資家」にすることで強烈なロイヤルティが生まれる。
+NFT・DAOなどのコミュニティ運営と組み合わせることで熱狂的ファンが生まれる。
+まだ実践者が少ない領域で先行者優位を取れる。
+
+■ 第6章：コミュニティ・文化の構築
+継続収益の最終形態はコミュニティ（サブスク・月額会費）。
+ファンが集まるコミュニティの設計原則。
+「文化」を作ることがマーケの到達点。
+コミュニティ内で顧客同士が価値を交換し合う仕組みを作ると解約率が下がる。
+
+■ 第7章：マネタイズ
+収益化の全体設計。フロントエンド（集客商品）とバックエンド（高単価商品）の設計。
+ローンチ戦略：事前に「欲しい」状態を作ってから期間限定で販売する手法。
+イケハヤ自身が実践してきたローンチシナリオの具体例。
+「常時販売より期間限定のほうが売れる」心理的理由。
+
+【明鏡の3つの独自性】
+1. 「マーケ＝変化を起こすこと」という定義から始まる哲学的な深さ
+2. リストマーケ×AI自動化という現代的な実装方法
+3. イケハヤ自身の実体験に基づく具体的なローンチ・コミュニティ設計
+
+【こんな人に刺さる】
+・AIで副業・事業をやっているのに収益が出ない
+・SNSのフォロワーが増えているのに売上につながらない
+・マーケティングを体系的に学んだことがない
+・継続収益の仕組みを作りたい
+・コンテンツビジネスを始めたい
+`;
+
+// =====================================================
+// 角度別プロンプト
+// =====================================================
+const ANGLE_PROMPTS = {
+  'ai-marketer': {
+    title: 'AIで稼げない本当の理由',
+    userPrompt: `
+角度：AIを使いこなしているのに収益が出ない→マーケ知識の欠如が原因→明鏡で解決
+
+以下の流れでnoteの完成記事を書いてください：
+
+1. 【タイトル】
+   例：「AIで稼げない人に足りないのは技術じゃなくてマーケ知識だった」
+   （数字・具体・断言で書く）
+
+2. 【リード（冒頭3〜5行）】
+   「AIツールを3ヶ月使い続けているのに、収益はほぼゼロ。」という状態を描写。
+   PAB型：問題→放置した場合の損失→この記事での解決を宣言。
+
+3. 【AIで稼げない本当の理由】
+   技術より先に必要なもの＝マーケティングの知識。
+   「作れるけど売れない」状態の原因を明鏡の哲学（変化を起こすこと）で解説。
+   SNSやAIツールはあくまで「手段」であり、マーケ設計がなければ機能しないことを伝える。
+
+4. 【AI時代こそリストマーケが重要な理由】
+   SNSのアルゴリズム依存リスクを説明し、リストマーケの概念を紹介。
+   「フォロワー1万人よりリスト1,000人のほうが稼げる」という逆説を解説。
+   AIでリストマーケを自動化できる可能性を示す。
+
+5. 【明鏡で学べること・購入紹介】
+   価格・ボリューム・誰向けかを正直に書く。デメリット（価格が高い）も含める。
+   「今が一番安い（特価29,800円）」という購入の背中を押す一文。
+
+6. 【まとめ・行動促し】
+   今すぐできる1つのアクション（例：LINE登録・SNSプロフィール見直し）を提示。
+   フォロー促しと次回予告。
+`,
+  },
+
+  'sns-limit': {
+    title: 'SNSフォロワーが増えても稼げない理由',
+    userPrompt: `
+角度：SNSを頑張っているのに収益につながらない→リストがないから→リストマーケへの転換
+
+以下の流れでnoteの完成記事を書いてください：
+
+1. 【タイトル】
+   例：「フォロワー5,000人なのに毎月の副業収入は3万円。足りなかったのはリストだった」
+   （共感できる数字を使い、逆説的に）
+
+2. 【リード】
+   「SNSを毎日更新しているのにある日突然リーチが半減した」という体験から始める。
+   アルゴリズムへの依存が最大のリスクであることを伝える。
+
+3. 【SNSマーケの根本的な問題】
+   ・プラットフォームリスク（アルゴリズム変更・凍結）
+   ・フォロワーは「借り物のオーディエンス」
+   ・エンゲージメントが高くても購買につながらない理由
+
+4. 【リストマーケとは何か】
+   明鏡で学んだリストマーケの概念をわかりやすく説明。
+   「自分のメディア」という概念（LINE・メルマガ・Discordなど）。
+   「SNSで集めてリストに誘導する」という流れを図解的に説明。
+   AIを使えば個人でも自動化できることを補足。
+
+5. 【明鏡の紹介・購入案内】
+   価格・内容・向いている人を正直に書く。「今が一番安い」を伝える。
+
+6. 【まとめ・行動促し】
+   「まず今日できること：SNSのプロフィールにLINEかメルマガへの誘導リンクを置く」
+   フォロー促しと次回予告。
+`,
+  },
+
+  'list-marketing': {
+    title: 'リストマーケで自動収益化する方法',
+    userPrompt: `
+角度：リストマーケの仕組みを作れば自動で稼げる→明鏡で体系的に学べる
+
+以下の流れでnoteの完成記事を書いてください：
+
+1. 【タイトル】
+   例：「リストマーケを知ってから、副業の仕組みが初めて理解できた話」
+   または「AIで自動化できるリストマーケとは何か、明鏡から学んだこと」
+
+2. 【リード】
+   「作業が止まると収益も止まる」という状態への共感。
+   一度仕組みを作れば自動で動く「ストック型」の収益への興味を喚起。
+
+3. 【リストマーケの仕組みを解説（核心価値提供）】
+   ① 集客（SNS・ブログ・YouTube等で認知）
+   ② リスト獲得（LINE・メルマガへ誘導。リードマグネットの設計）
+   ③ 教育（リストに向けて価値提供・信頼構築）
+   ④ 販売（ローンチ or 常時販売）
+   この4段階の仕組みをわかりやすく説明する。AIでどこを自動化できるか補足。
+
+4. 【明鏡から学んだ具体的な気づき】
+   「フォロワーは借り物」という哲学を共有。
+   明鏡のリストマーケ章から学んだことで一番刺さった1〜2点を紹介。
+
+5. 【明鏡の紹介・購入案内】
+   正直レビュー含め。「特に第4章が秀逸」という具体的な推薦。
+
+6. 【まとめ・行動促し】
+   「まず今日できること：LINEオープンチャットを作ってSNSプロフィールにリンクを置く」
+`,
+  },
+
+  'launch': {
+    title: '個人でも使えるローンチ戦略',
+    userPrompt: `
+角度：個人ビジネスで一気に売るにはローンチ設計が必要→明鏡で学べる
+
+以下の流れでnoteの完成記事を書いてください：
+
+1. 【タイトル】
+   例：「個人で月収30万円を作るのに必要だったのは毎日頑張ることじゃなくてローンチ設計だった」
+   または「なぜ常時販売より期間限定のほうが圧倒的に売れるのか、明鏡で理解した」
+
+2. 【リード】
+   「商品を作ったのに、告知しても全然売れない」という状態への共感から始める。
+   「売れない原因は商品の質ではなく、販売の設計にある」という仮説提示。
+
+3. 【ローンチ戦略とは何か（核心価値提供）】
+   ・ローンチ＝販売イベントを「事前に設計する」手法
+   ・「欲しい」状態を作ってから売る（需要を先に作る）
+   ・期間限定が売れる心理的理由（希少性・損失回避バイアス）
+   ・プレローンチ→ローンチ→クロージングの3段階
+   明鏡で学んだイケハヤ流のローンチシナリオを紹介。
+
+4. 【個人でのローンチ実践例】
+   小規模でも機能するローンチの例（フォロワー500人以下でも可能）。
+
+5. 【明鏡の紹介・購入案内】
+   「ローンチ設計を一から学べる日本語の教材は少ない。明鏡の第7章はその意味で貴重」
+
+6. 【まとめ・行動促し】
+   「まず今日できること：次の販売に期間限定（1週間）を設定してみる」
+`,
+  },
+
+  'community': {
+    title: 'コミュニティで継続収益を作る',
+    userPrompt: `
+角度：スポット収益より継続収益→コミュニティ設計が鍵→明鏡で体系的に学べる
+
+以下の流れでnoteの完成記事を書いてください：
+
+1. 【タイトル】
+   例：「毎月安定して入ってくる収益を作るためにコミュニティを始めた話」
+   または「なぜ熱狂的なファンがいる人は何をやっても売れるのか、明鏡で理解した」
+
+2. 【リード】
+   「単発の売上は毎月ゼロからのスタート。精神的にも体力的にも限界が来た」という共感。
+   「一度作れば毎月入ってくる収益」への強い欲求を喚起。
+
+3. 【継続収益の最終形態＝コミュニティ（核心価値提供）】
+   ・コミュニティビジネスがなぜ最強なのか（解約率・顧客同士の価値交換）
+   ・「文化を作ること」がマーケの到達点という明鏡の哲学
+   ・小さく始められるコミュニティの例（Discordサーバー・Slackチーム・noteコミュニティ）
+   ・月額1,000〜3,000円×100人＝月収10万〜30万円の現実感
+
+4. 【明鏡で学んだコミュニティ設計の核心】
+   熱狂的ファンを生む3つの要素を紹介（明鏡の内容ベースで）。
+   トークンマーケティングとの組み合わせによる応用例も軽く触れる。
+
+5. 【明鏡の紹介・購入案内】
+   「コミュニティとマネタイズを一冊で体系的に学べる。第6〜7章は特に必読」
+
+6. 【まとめ・行動促し】
+   「まず今日できること：Discordサーバーを1つ作って3人に入ってもらう」
+`,
+  },
+
+  'philosophy': {
+    title: 'マーケの本質を知らずに稼ごうとしていた',
+    userPrompt: `
+角度：今のやり方に行き詰まっている→マーケの本質（変化を起こすこと）を理解するだけで変わる→明鏡
+
+以下の流れでnoteの完成記事を書いてください：
+
+1. 【タイトル】
+   例：「マーケティングの本質を知らないまま副業を1年やっていた話」
+   または「『変化を起こすこと』がマーケの本質だと知ってから、発信の仕方が180度変わった」
+
+2. 【リード】
+   「いろんな手法を試してきたが、何かが根本的に違う気がしていた」という状態への共感。
+   「マーケを体系的に学んだことがない人へ」と読者を明示。
+
+3. 【マーケの本質とは何か（核心価値提供）】
+   明鏡の定義「マーケティング＝変化を起こすこと」を丁寧に解説。
+   「商品を売ることではなく、人の認識・行動・人生を変えること」
+   この定義を理解するとすべての施策が繋がって見えるようになる体験談。
+   「与えて与えて与えまくる」イケハヤ哲学の具体的な意味。
+   コンテンツを「消耗品ではなく資産として積み上げる」考え方。
+
+4. 【知ってから変わったこと】
+   SNSやツールの使い方・発信内容・商品設計への影響を具体的に書く。
+
+5. 【明鏡の紹介・購入案内】
+   「哲学とリストマーケ、両方が20万字で学べる。価格は29,800円と高いが読み返す価値がある」
+
+6. 【まとめ・行動促し】
+   「まず今日できること：自分の今の発信が『誰のどんな変化を起こそうとしているか』を一文で書いてみる」
+`,
+  },
+};
+
+// =====================================================
+// 状態管理
+// =====================================================
+let selectedAngle = 'ai-marketer';
+let isGenerating = false;
+let generatedArticle = '';
+
+// =====================================================
+// APIキー管理
+// =====================================================
+function loadApiKey() {
+  const key = localStorage.getItem('meikyo_api_key') || '';
+  const input = document.getElementById('apiKeyInput');
+  if (key) {
+    input.value = key;
+    document.getElementById('apiKeySaved').style.display = 'inline';
+  }
+}
+
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key) { alert('APIキーを入力してください'); return; }
+  localStorage.setItem('meikyo_api_key', key);
+  const saved = document.getElementById('apiKeySaved');
+  saved.style.display = 'inline';
+  const btn = document.getElementById('btnSaveKey');
+  btn.textContent = '保存済み';
+  btn.classList.add('active');
+  setTimeout(() => { btn.textContent = '保存'; btn.classList.remove('active'); }, 2000);
+}
+
+function toggleKeyVisibility() {
+  const input = document.getElementById('apiKeyInput');
+  const btn = document.getElementById('btnToggleKey');
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '隠す';
+  } else {
+    input.type = 'password';
+    btn.textContent = '表示';
+  }
+}
+
+// =====================================================
+// アングル選択
+// =====================================================
+function selectAngle(btn) {
+  document.querySelectorAll('.angle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedAngle = btn.dataset.angle;
+}
+
+// =====================================================
+// 記事生成（Anthropic API ストリーミング）
+// =====================================================
+async function generateArticle() {
+  if (isGenerating) return;
+
+  const apiKey = document.getElementById('apiKeyInput').value.trim()
+    || localStorage.getItem('meikyo_api_key') || '';
+
+  if (!apiKey) {
+    showError('APIキーを入力して「保存」してください。');
+    return;
   }
 
-  document.querySelectorAll('.price-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      document.querySelectorAll('.price-chip').forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      selectedPrice = parseInt(chip.dataset.price);
-    });
-  });
+  const userContext = document.getElementById('userContext').value.trim();
+  const affUrl = document.getElementById('affUrl').value.trim() || '{{AFFILIATE_URL}}';
+  const angleData = ANGLE_PROMPTS[selectedAngle];
 
-  // ===== コピー =====
-  function copyText(text, btn) {
-    navigator.clipboard.writeText(text).then(() => {
-      btn.textContent = 'コピー済み';
-      btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = 'コピー'; btn.classList.remove('copied'); }, 2000);
-    });
+  if (!angleData) {
+    showError('角度を選択してください。');
+    return;
   }
 
-  // ===== 全章コピー =====
-  let allPromptsText = '';
-  function copyAllPrompts() {
-    if (!allPromptsText) return;
-    const btn = document.getElementById('btnCopyAll');
-    navigator.clipboard.writeText(allPromptsText).then(() => {
-      btn.textContent = '✅ コピーしました';
-      btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = '📋 全章のプロンプトをまとめてコピー'; btn.classList.remove('copied'); }, 2500);
+  hideError();
+  isGenerating = true;
+  generatedArticle = '';
+
+  const btn = document.getElementById('btnGenerate');
+  btn.disabled = true;
+  btn.textContent = '⏳ 生成中...';
+
+  const outputEl = document.getElementById('articleOutput');
+  const outputDiv = document.getElementById('output');
+  const statusBar = document.getElementById('statusBar');
+
+  outputDiv.style.display = 'block';
+  statusBar.style.display = 'flex';
+  outputEl.innerHTML = '<span class="streaming-cursor"></span>';
+  outputDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  const systemPrompt = `あなたは「明鏡」を実際に読んで深く学んだ副業ライター・マーケターです。
+noteに記事を書いて、読者に価値を届けながら明鏡を自然に推薦することを得意としています。
+
+${MEIKYO_KNOWLEDGE}
+
+【記事執筆の重要なルール】
+・記事は日本語のみ。丁寧体（ですます調）で書く。
+・冒頭1文で「誰向けか」が伝わるようにする。「〜かもしれません」という弱い表現は使わない。断言する。
+・明鏡の内容は「自分が読んで学んだこと」として等身大に紹介する。上から目線にならない。
+・価格は正直に書く（29,800円）。デメリット・向いていない人も正直に書く（これが信頼につながる）。
+・noteに直接コピペできる完成原稿として出力する。
+・アフィリエイトリンクは末尾に「👉 明鏡（Brain）：${affUrl}」の形式で配置する。
+・文字数：2,500〜3,500字（読み応えがあるが読み切れる長さ）。`;
+
+  const userContextSection = userContext
+    ? `\n\n【私自身の体験・状況（記事に自然に織り込んでください）】\n${userContext}`
+    : '';
+
+  const userMessage = `${angleData.userPrompt}${userContextSection}
+
+上記の指示に従って、noteにそのまま投稿できる完成記事を出力してください。
+タイトルから始めて、最後の行まで記事本文として書いてください。
+前置き・説明・メモは一切不要です。記事本文のみを出力してください。`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 4096,
+        stream: true,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userMessage }],
+      }),
     });
-  }
 
-  // ===== 導入部生成 =====
-  let introText = '';
-
-  function generateIntro({ theme, tools, numbers, profile, takeaway, affProduct, affConcepts, affTarget }) {
-    const formulaMap = {
-      '実録系':    { formula: 'A', label: 'PAB型（問題→煽り→橋渡し）', reason: '悩み・失敗体験を共有する記事に最適' },
-      'ノウハウ系': { formula: 'A', label: 'PAB型（問題→煽り→橋渡し）', reason: '読者の誤解・思い込みを崩す入口に最適' },
-      '記録系':    { formula: 'B', label: '結果先出し型', reason: '数字・実績が明確な記録記事に最適' },
-      'テンプレ集系': { formula: 'D', label: '問いかけ＋FOMO型', reason: '「知らないと損」の構造が作れるツール紹介に最適' },
-      '比較・検証系': { formula: 'D', label: '問いかけ＋FOMO型', reason: '「知っている人との差」を意識させる比較記事に最適' },
-      '失敗談系':  { formula: 'C', label: '共感＋資格提示型', reason: '著者体験が差別化になる失敗談に最適' },
-      'アフィリエイト記事': { formula: 'AFF', label: 'PAB型×商品紹介（問題→共感→解決策として紹介）', reason: '読者の悩みを先に言語化してから商品を自然に紹介する' },
-    };
-
-    const { formula, label, reason } = formulaMap[selectedType] || formulaMap['実録系'];
-    const toolStr = tools || 'AIツール';
-    const numStr  = numbers ? numbers.split(/[、,，]/)[0].trim() : '';
-    const profStr = profile || '';
-    const paidLine = isPaid
-      ? '\n\nここから先に書いてあること、本当はあまり公開したくなかった。\nでも、知っている人と知らない人で差が広がる一方だから書くことにした。'
-      : '';
-
-    let intro = '';
-
-    if (formula === 'A') {
-      intro = `${theme}をやっているのに、なかなか結果が出ない。\n\n試行錯誤を繰り返しても、何かが変わることはなかった。\nこのまま続けると、時間だけが過ぎていく。\n多くの人が「もう少し続ければ変わるはず」と信じながら、結局は諦める。\n\nこの記事では、${toolStr}を使って${theme}に取り組んだ話を、全部正直に書く。${numStr ? '\n【' + numStr + '】という結果になるまでの過程も含めて。' : ''}\nうまくいったことも、失敗したことも。${paidLine}`;
-    } else if (formula === 'B') {
-      intro = `${numStr ? numStr : '【具体的な数字・実績を入れる】'}。\n${profStr ? profStr + 'の自分が' : '自分が'}こう言っても、最初は信じてもらえないかもしれない。\n\n${toolStr}を使い始めたことが、転換点だった。\n一般的に言われる方法とは少し違うやり方をした。それだけで、大きく変わった。\n\n具体的な手順と、うまくいかなかった部分も含めて、この記事に全部書いた。`;
-    } else if (formula === 'C') {
-      intro = `${theme}で悩んでいる人の気持ちは、よくわかる。\n自分もずっと同じ状態だった。\n\nあることをきっかけに、変わった。\n何をしたかは、この記事で全部書く。\n\n${numStr ? numStr + 'まで変われた。' : '確実に変わった。'}同じ状況の人なら、再現できると思っている。\n読んで損はさせない。それだけは約束する。`;
-    } else if (formula === 'D') {
-      intro = `${theme}、うまく活用できていますか？\n\n知らないまま続けると、効率でも収益でも、ずっと損し続ける。\n多くの人がこれを知らずに、半年・1年を無駄にしている。\n\nすでに${toolStr}を使いこなしている人は、差をつけ続けている。\nこの記事を読めば、${takeaway || theme + 'の全貌'}がわかる。\n\n知っておくだけで判断が変わる。後で読もう、は正直もったいない。`;
-    } else if (formula === 'AFF') {
-      const prod = affProduct || '【商品名】';
-      const tgt  = affTarget  || 'AIで副業を始めたが収益が出ていない人';
-      const firstConcept = (affConcepts || '').split('\n').find(l => l.trim()) || '【商品のコンセプト】';
-      intro = `${tgt}へ。\n\nAIツールを使いこなせるようになっても、なぜか売上が上がらない——。\nそういう状態が続いていた。作れる、でも売れない。\n\nこのまま続けると、ツールの使い方だけが上手くなって、肝心な「稼ぎ方」を知らないまま時間が過ぎる。\n\n${prod}を読んで、ようやくその理由がわかった。\n問題は技術ではなく、${firstConcept.replace(/^[・\-\s]+/, '')}を知らなかったことだった。\n\nこの記事では、${prod}から学んだことを正直に書く。\n購入を迷っている人の判断材料になれば十分だ。`;
+    if (!response.ok) {
+      const errJson = await response.json().catch(() => ({}));
+      const msg = errJson?.error?.message || `HTTP ${response.status}`;
+      throw new Error(msg);
     }
 
-    return { intro, label, reason };
-  }
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
 
-  function renderIntro(intro, label, reason) {
-    document.getElementById('introFormula').textContent = `使用フォーミュラ: ${label} — ${reason}`;
-    document.getElementById('introText').textContent = intro;
-    document.getElementById('introBlock').style.display = 'block';
-    introText = intro;
-  }
+    outputEl.innerHTML = '<span class="streaming-cursor"></span>';
 
-  function copyIntro() {
-    const btn = document.getElementById('btnCopyIntro');
-    navigator.clipboard.writeText(introText).then(() => {
-      btn.textContent = '✅ コピーしました';
-      btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = '📋 導入部をコピー'; btn.classList.remove('copied'); }, 2500);
-    });
-  }
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
 
-  // ===== 生成 =====
-  function generate() {
-    const theme    = document.getElementById('theme').value.trim();
-    const tools    = document.getElementById('tools').value.trim();
-    const numbers  = document.getElementById('numbers').value.trim();
-    const profile  = document.getElementById('profile').value.trim();
-    const takeaway   = document.getElementById('takeaway').value.trim();
-    const lineOffer  = document.getElementById('lineOffer').value.trim();
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop();
 
-    // アフィリエイト情報
-    const affProduct  = document.getElementById('affProduct').value.trim();
-    const affDesc     = document.getElementById('affDesc').value.trim();
-    const affPrice    = document.getElementById('affPrice').value.trim();
-    const affUrl      = document.getElementById('affUrl').value.trim();
-    const affConcepts = document.getElementById('affConcepts').value.trim();
-    const affTarget   = document.getElementById('affTarget').value.trim();
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const data = line.slice(6).trim();
+        if (data === '[DONE]') continue;
 
-    if (selectedType === 'アフィリエイト記事' && !affProduct) {
-      alert('アフィリエイト記事では「商品名」は必須です');
-      return;
-    }
-    if (selectedType !== 'アフィリエイト記事' && !theme) {
-      alert('「メインテーマ」は必須です');
-      return;
-    }
-
-    const ctx = { theme, tools, numbers, profile, takeaway, lineOffer,
-                  affProduct, affDesc, affPrice, affUrl, affConcepts, affTarget };
-    const titles = makeTitles(ctx);
-    const chapters = makeChapters(ctx);
-    const { intro, label, reason } = generateIntro(ctx);
-
-    renderTitles(titles);
-    renderIntro(intro, label, reason);
-    renderChapters(chapters);
-
-    document.getElementById('output').style.display = 'block';
-    document.getElementById('output').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
-  // ===== タイトル生成 =====
-  function makeTitles({ theme, numbers, affProduct, affConcepts, affTarget }) {
-    const num = numbers ? numbers.split(/[、,，]/)[0].trim() : '';
-    const prod = affProduct || '【商品名】';
-    const firstConcept = (affConcepts || '').split('\n').find(l => l.trim()) || '';
-    const conceptShort = firstConcept.replace(/^[・\-\s]+/, '').replace(/。.*/, '').substring(0, 25);
-    const patterns = {
-      '実録系': [
-        `【実録】${theme}`,
-        num ? `${num}を達成した話。正直に全部書く。` : `${theme}で本当に変わったこと、正直に書く`,
-        `${theme}をやってみてわかったこと`,
-      ],
-      'ノウハウ系': [
-        `AIで副業を始める前に知っておくべき3つのこと`,
-        `【保存版】${theme}で気をつけたいこと全部まとめた`,
-        `${theme}を成功させるために実践した3ステップ`,
-      ],
-      '記録系': [
-        num ? `${num}。全部公開します。` : `${theme}を続けた記録、全部公開する`,
-        `${theme}を1ヶ月続けた結果【数字あり】`,
-        `毎日${theme}を続けたら何が変わったか`,
-      ],
-      'テンプレ集系': [
-        `【全部無料】${theme}で使えるテンプレ集`,
-        `保存推奨。${theme}のプロンプト・テンプレをまとめた`,
-        `${theme}で実際に使っているテンプレを全部公開する`,
-      ],
-      '比較・検証系': [
-        `${theme}、どっちがいいか実際に使って比べた`,
-        `【徹底比較】${theme}を両方使ってわかった違い`,
-        `${theme}を比較した結果、自分はこっちを選んだ`,
-      ],
-      '失敗談系': [
-        `${theme}で失敗した話、正直に全部書く`,
-        `【反省】${theme}をやってみて後悔したこと3つ`,
-        `${theme}、うまくいかなかった。その理由と気づき。`,
-      ],
-      'アフィリエイト記事': [
-        conceptShort
-          ? `${conceptShort}を知らないと、AIで副業をやっても稼げない理由`
-          : `${prod}を読んで気づいた。AIで稼げない本当の理由`,
-        `${prod}の感想。AIで副業をやっているのに収益が出ない人へ正直に書く`,
-        `${prod}を読んだ。${theme || 'AI副業'}で結果が出ていない人には刺さる内容だった`,
-      ],
-    };
-    return (patterns[selectedType] || patterns['実録系']);
-  }
-
-  // ===== 章立て生成 =====
-  function makeChapters({ theme, tools, numbers, profile, takeaway, lineOffer,
-                          affProduct, affDesc, affPrice, affUrl, affConcepts, affTarget }) {
-    const toolLine  = tools    ? `使用ツール: ${tools}` : '';
-    const numLine   = numbers  ? `具体的な数字・変化: ${numbers}` : '';
-    const profLine  = profile  ? `書き手: ${profile}` : '';
-    const takeLine  = takeaway ? `読者への持ち帰り: ${takeaway}` : '';
-
-    const baseCtx = [
-      `テーマ: ${theme}`,
-      toolLine, numLine, profLine, takeLine
-    ].filter(Boolean).join('\n');
-
-    const toneNote = `【トーン指示】丁寧体（〜しました、〜です、〜ます）で書く。1段落3行以内。親しみやすく、読者に寄り添う文体。
-【著者ポジション】著者はかつてさまざまな副業に手を出したが全く稼げなかった経験を持つ。教材や情報商材を何度も購入しては満足して続かない、というサイクルを繰り返していた。そんな中でAIツール（Claude Codeなど）に出会い、初めて「続けられる・稼げる」手応えをつかんだ人物。読者と同じ悩みを抱えていた等身大の存在として描写しながら、「自分も同じ状況から変われた」という希望を自然に伝える。読者が「この人は自分と同じだった。だから自分にもできるかもしれない」と感じる流れを意識する。
-【冒頭の書き方ルール】リード文は必ず「誰向けか＋具体的な結果」で言い切る。「〜かもしれません」「ヒントになれば」「参考になれば」という弱い表現は絶対に使わない。例：「副業で0→1を作れない人へ。この方法なら3日で初報酬が出せます。」のように断言する。
-【再現ステップの挿入・不完全化】記事内のどこか1箇所に再現ステップを入れるが、「全部は教えない」設計にする。流れ（①〜③）は見せるが、最も重要な詳細（実際のテンプレ・具体的な案件の選び方・使ったプロンプトなど）は「※実際に使った〇〇はLINEで配布しています」と伏せる。読者が「流れはわかった。でも具体的なやり方が知りたい」と感じる状態で終わらせる。「全部教える人は稼げない。続きが気になる人が稼ぐ」という設計原則を守る。`;
-
-    const actionNote = `【行動促進】締めの直前に「まずは〇〇をやってみてください」という具体的な1アクションを必ず入れる。複数出さない。ハードルが低く今日すぐできることに絞る（例：「まずはClaude.aiを無料登録してみてください」「まずは今日の作業を1つだけAIに頼んでみてください」など）。`;
-
-    const lineCtaNote = lineOffer
-      ? `【LINE誘導・具体特典型】以下の構造で書く。「よかったら」「ぜひ」などの弱い言葉は使わない。
----
-実際に私が${numbers ? numbers.split(/[、,，]/)[0].trim() + 'を達成した' : '結果を出した'}
-
-・${lineOffer}
-
-をLINEで無料配布しています。
-
-「まず1件受注したい」「0→1を達成したい」という方はこちら
-https://lin.ee/qyhQEqS
----
-lineOfferが複数の特典を含む場合は箇条書き（・）で3点以内に分けて書く。ターゲットは「まず1件受注したい人」「0→1を達成したい人」に明確化する。`
-      : `【LINE誘導・具体特典型】「よかったら登録してください」は使わない。何が手に入るかを具体的に書き、「まず1件受注したい方はこちら」というターゲットを明示してURL（https://lin.ee/qyhQEqS）を記載する。`;
-
-    const structures = {
-      '実録系': [
-        {
-          title: 'リード（冒頭）',
-          desc: '最初の3行で読者を引き込む',
-          prompt: `以下の情報をもとに、note記事の冒頭（リード文）を書いてください。\n\n${baseCtx}\n\n【要件】\n・3行以内で結論から入る（「〇〇が変わった」「〇〇できるようになった」）\n・自己紹介は1行だけ入れる\n・読んだ人が「これは自分に関係ある話だ」と思える書き出しにする\n${toneNote}`,
-          paid: false,
-        },
-        {
-          title: '使う前の状態（Before）',
-          desc: '課題・不安・ボトルネックを正直に書く',
-          prompt: `以下の情報をもとに、AIツールを使う前の状態・課題を書いてください。\n\n${baseCtx}\n\n【要件】\n・具体的な困りごと・不安・ボトルネックを2〜3つ挙げる\n・読者が「あるある」と感じるような共感ポイントを入れる\n・自己批判しすぎない（「当時の自分はこうだった」という距離感で）\n${toneNote}`,
-          paid: false,
-        },
-        {
-          title: `変わったこと3選（After）`,
-          desc: '数字・習慣・ビジネスの変化を具体的に',
-          prompt: `以下の情報をもとに、AIツールを使い始めて変わったこと3選を書いてください。\n\n${baseCtx}\n\n【要件】\n・① 数値で表せる変化（速度・本数・時間など）\n・② 習慣・行動の変化\n・③ 収益・ビジネスへの影響\n・各項目は「結論 → 具体エピソード → 気づき」の流れで書く\n・数字は必ず入れる。なければ「体感〇倍」などで表現する\n${toneNote}`,
-          paid: true,
-        },
-        {
-          title: '正直なデメリット・注意点',
-          desc: '欠点を書くことで信頼性が上がる',
-          prompt: `以下の情報をもとに、AIツールのデメリット・注意点を正直に書いてください。\n\n${baseCtx}\n\n【要件】\n・2〜3つのデメリットや「ここだけは気をつけて」という点を書く\n・批判的になりすぎず「こういう点は注意が必要」というトーンで\n・「万能ではないが、使いこなせれば〇〇」という前向きな着地にする\n${toneNote}`,
-          paid: true,
-        },
-        {
-          title: 'まとめ＆次回予告',
-          desc: 'フォロー促しと次の記事への導線',
-          prompt: `以下の情報をもとに、記事のまとめと締めくくりを書いてください。\n\n${baseCtx}\n\n【要件】\n・記事の要点を1〜2行でまとめる\n・「読んだあと何をすればいいか」を1つだけ提示する（複数出さない）\n・「次の記事では〇〇を書きます」という予告を入れてフォローを促す\n・押しつけがましくならない自然な締め方にする\n${toneNote}\n${actionNote}\n${lineCtaNote}`,
-          paid: true,
-        },
-      ],
-      'ノウハウ系': [
-        {
-          title: 'リード＆よくある失敗',
-          desc: '読者の誤解・思い込みを崩す入口',
-          prompt: `以下の情報をもとに、ノウハウ記事のリードと「よくある失敗・誤解」を書いてください。\n\n${baseCtx}\n\n【要件】\n・「〇〇を始める前に読んでほしい」という入り方でターゲット読者を明示する\n・多くの人がやりがちな失敗・誤解を1〜2つ挙げる\n・「自分も最初はそうだった」と共感を入れてから本論につなぐ\n${toneNote}`,
-          paid: false,
-        },
-        {
-          title: 'ポイント①',
-          desc: '1つ目のノウハウ（結論→理由→実例）',
-          prompt: `以下の情報をもとに、ノウハウ記事の「ポイント①」を書いてください。\n\n${baseCtx}\n\n【要件】\n・構成：結論（1行）→ 理由・背景（2〜3行）→ 自分の実践例（具体的に）\n・AIツールを使った収益化・副業に関係するポイントにする\n・読者がすぐ試せる「小さなアクション」を最後に入れる\n${toneNote}`,
-          paid: true,
-        },
-        {
-          title: 'ポイント②',
-          desc: '2つ目のノウハウ（結論→理由→実例）',
-          prompt: `以下の情報をもとに、ノウハウ記事の「ポイント②」を書いてください。\n\n${baseCtx}\n\n【要件】\n・構成：結論（1行）→ 理由・背景（2〜3行）→ 自分の実践例（具体的に）\n・ポイント①とは異なる角度のノウハウにする\n・「これを知らないと損する」という価値を感じさせる内容にする\n${toneNote}`,
-          paid: true,
-        },
-        {
-          title: 'ポイント③',
-          desc: '3つ目のノウハウ（結論→理由→実例）',
-          prompt: `以下の情報をもとに、ノウハウ記事の「ポイント③」を書いてください。\n\n${baseCtx}\n\n【要件】\n・構成：結論（1行）→ 理由・背景（2〜3行）→ 自分の実践例（具体的に）\n・3つの中で最も「行動につながりやすい」実践的なポイントにする\n・最後に3つのまとめ（箇条書き1行ずつ）を入れる\n${toneNote}`,
-          paid: true,
-        },
-        {
-          title: 'まとめ＆次のアクション',
-          desc: '読者が動き出せる締めくくり',
-          prompt: `以下の情報をもとに、ノウハウ記事のまとめを書いてください。\n\n${baseCtx}\n\n【要件】\n・「今日から試せる最初のアクション」を1つだけ提示する（複数は出さない）\n・「難しく考えなくていい、まずこれだけやってみて」という背中を押す締め方\n・次の記事への予告またはフォロー促しを入れる\n${toneNote}\n${actionNote}\n${lineCtaNote}`,
-          paid: true,
-        },
-      ],
-      '記録系': [
-        {
-          title: 'リード＆数字の提示',
-          desc: '最初に数字を出して興味を引く',
-          prompt: `以下の情報をもとに、記録系記事のリードを書いてください。\n\n${baseCtx}\n\n【要件】\n・「〇〇日間／〇本続けた結果を全部公開する」と最初に数字を出す\n・「なぜこれをやったか」動機を1〜2行で書く\n・「最初の状態（ビフォー）」も短く触れておく\n${toneNote}`,
-          paid: false,
-        },
-        {
-          title: 'やったこと一覧',
-          desc: '取り組んだ内容をリスト形式で',
-          prompt: `以下の情報をもとに、記録記事の「やったこと一覧」を書いてください。\n\n${baseCtx}\n\n【要件】\n・リスト形式で具体的に列挙する（箇条書きOK）\n・「〇月〇日：〇〇した」という日付入りの形式も使える\n・スクリーンショット・画像を入れる場所に「【画像】〇〇のスクショ」と注記を入れる\n${toneNote}`,
-          paid: false,
-        },
-        {
-          title: '数字で振り返る',
-          desc: '本数・時間・売上などを正直に公開',
-          prompt: `以下の情報をもとに、記録記事の「数字で振り返る」パートを書いてください。\n\n${baseCtx}\n\n【要件】\n・本数・時間・スキ数・売上・フォロワー変化などの数字を出す\n・「思ったより〜だった」「意外にも〜」という正直な感想も入れる\n・良かった数字だけでなく、うまくいかなかった点も正直に書く\n${toneNote}`,
-          paid: true,
-        },
-        {
-          title: '得たもの・気づき',
-          desc: '継続して変わったこと・発見',
-          prompt: `以下の情報をもとに、記録記事の「得たもの・気づき」を書いてください。\n\n${baseCtx}\n\n【要件】\n・スキル面・精神面・ビジネス面で変わったことを書く\n・「続けてよかった理由」を1つに絞って書く（複数出すと薄まる）\n・「続けなかった場合はどうなっていたか」という視点も入れると深みが出る\n${toneNote}`,
-          paid: true,
-        },
-        {
-          title: 'まとめ＆継続宣言',
-          desc: '次の展開への期待をつくる締め',
-          prompt: `以下の情報をもとに、記録記事のまとめと締めを書いてください。\n\n${baseCtx}\n\n【要件】\n・「続けてよかった」という結論を1行で\n・「次は〇〇に挑戦する」という継続宣言 or 「こう展開していく」という次の展開\n・フォローしてくれると次の記録も届く、という自然なフォロー促しを入れる\n${toneNote}\n${actionNote}\n${lineCtaNote}`,
-          paid: true,
-        },
-      ],
-      'テンプレ集系': [
-        {
-          title: 'リード＆なぜ公開するか',
-          desc: '「全部無料」を最初に宣言',
-          prompt: `以下の情報をもとに、テンプレ集記事のリードを書いてください。\n\n${baseCtx}\n\n【要件】\n・「全部無料で公開します」「保存推奨」を最初の1〜2行に入れる\n・「なぜこれを作ったか・公開するか」を1〜2行で書く\n・「これを使えば〇〇ができる」という価値を端的に伝える\n${toneNote}`,
-          paid: false,
-        },
-        {
-          title: 'テンプレ①〜③（無料分）',
-          desc: '最初の3本を公開して価値を示す',
-          prompt: `以下の情報をもとに、テンプレ集の最初の3本を書いてください。\n\n${baseCtx}\n\n【要件】\n・各テンプレの構成：「▼ タイトル（用途がわかる名前）」→「使いどころ（1行）」→「テンプレ本文（コードブロック形式）」\n・コピーしてすぐ使えるよう具体的に書く\n・「〇〇のときに使う」という場面を明示する\n${toneNote}`,
-          paid: false,
-        },
-        {
-          title: 'テンプレ④〜（残り全量）',
-          desc: '価値の核心部分を全公開',
-          prompt: `以下の情報をもとに、テンプレ集の残りのテンプレを書いてください（合計10〜15本になるように）。\n\n${baseCtx}\n\n【要件】\n・各テンプレの構成：「▼ タイトル」→「使いどころ（1行）」→「テンプレ本文（コードブロック形式）」\n・バリエーションを持たせる（用途・場面・難易度が異なるものを混ぜる）\n・コツ・注意点は1〜2本に1回ペースで挟む\n${toneNote}`,
-          paid: true,
-        },
-        {
-          title: '使い方のコツ＆応用例',
-          desc: '組み合わせ・実践例で満足度を上げる',
-          prompt: `以下の情報をもとに、テンプレの「使い方のコツと応用例」を書いてください。\n\n${baseCtx}\n\n【要件】\n・テンプレを組み合わせて使う例を1〜2個紹介する\n・「このテンプレを使って〇〇を作った」という実例を入れる\n・「気に入ったものだけ使えばOK」という柔らかい締めにする\n${toneNote}`,
-          paid: true,
-        },
-        {
-          title: 'まとめ',
-          desc: 'フォロー促し・次回予告',
-          prompt: `以下の情報をもとに、テンプレ集のまとめを書いてください。\n\n${baseCtx}\n\n【要件】\n・「使ってみたら感想を教えてほしい」という参加感のある締めにする\n・次のテンプレ集・記事への予告を入れる\n・フォローしてくれると次の無料テンプレが届く、という自然な誘導を入れる\n${toneNote}\n${actionNote}\n${lineCtaNote}`,
-          paid: true,
-        },
-      ],
-      '比較・検証系': [
-        {
-          title: 'リード＆比較する理由',
-          desc: '何と何を比べるかを最初に明示',
-          prompt: `以下の情報をもとに、比較記事のリードを書いてください。\n\n${baseCtx}\n\n【要件】\n・「〇〇と△△を実際に両方使って比べました」と最初に宣言する\n・なぜ比較しようと思ったか（きっかけ・動機）を1〜2行で書く\n・「どちらが優れているかではなく、用途による違いを伝える」というスタンスを示す\n${toneNote}`,
-          paid: false,
-        },
-        {
-          title: '比較①：基本スペック・使いやすさ',
-          desc: '機能・UI・導入しやすさの比較',
-          prompt: `以下の情報をもとに、比較記事の「基本スペック・使いやすさ」を書いてください。\n\n${baseCtx}\n\n【要件】\n・機能・UI・導入のしやすさをそれぞれ3〜4行で比較する\n・「どちらが優れている」ではなく「こういう人には〇〇が向いている」という視点で書く\n・自分が実際に使って感じたことを具体的に入れる\n${toneNote}`,
-          paid: false,
-        },
-        {
-          title: '比較②：収益化・実用場面での違い',
-          desc: '副業・収益化という観点での比較',
-          prompt: `以下の情報をもとに、比較記事の「収益化・実用場面での違い」を書いてください。\n\n${baseCtx}\n\n【要件】\n・副業・個人開発・コンテンツ制作の場面でそれぞれどう使えるかを比較する\n・具体的な使用例を入れる（「〇〇をするときは△△が速かった」など）\n・数字や時間など定量的な違いがあれば必ず入れる\n${toneNote}`,
-          paid: true,
-        },
-        {
-          title: '比較③：コスト・無料枠の実態',
-          desc: '費用対効果の正直な比較',
-          prompt: `以下の情報をもとに、比較記事の「コスト・無料枠の実態」を書いてください。\n\n${baseCtx}\n\n【要件】\n・料金プラン・無料枠の実態を正直に比較する\n・「無料でどこまでできるか」「有料にする価値があるか」を具体的に書く\n・「自分はどちらを使い続けているか、その理由」を正直に書く\n${toneNote}`,
-          paid: true,
-        },
-        {
-          title: '結論＆使い分けガイド',
-          desc: 'どんな人にどちらが向くかをまとめる',
-          prompt: `以下の情報をもとに、比較記事の結論と使い分けガイドを書いてください。\n\n${baseCtx}\n\n【要件】\n・「〇〇な人には△△」「□□な人には◇◇」という使い分け表 or 箇条書きを入れる\n・「どちらが正解ではなく、目的によって変わる」という着地にする\n・次の記事への予告またはフォロー促しを入れる\n${toneNote}\n${actionNote}\n${lineCtaNote}`,
-          paid: true,
-        },
-      ],
-      '失敗談系': [
-        {
-          title: 'リード＆失敗の概要',
-          desc: '何に失敗したかを最初に正直に言う',
-          prompt: `以下の情報をもとに、失敗談記事のリードを書いてください。\n\n${baseCtx}\n\n【要件】\n・「〇〇で失敗した」と最初に言い切る（言い訳から始めない）\n・「この記事は成功談ではなく失敗から学んだことを書く」とスタンスを明示する\n・読者が「自分も同じ失敗をするかも」と感じるような共感ポイントを入れる\n${toneNote}`,
-          paid: false,
-        },
-        {
-          title: '失敗①：何をどう間違えたか',
-          desc: '1つ目の失敗を具体的に語る',
-          prompt: `以下の情報をもとに、失敗談の「失敗①」を書いてください。\n\n${baseCtx}\n\n【要件】\n・構成：何をしたか → どう失敗したか → なぜそうなったか（原因）\n・言い訳せずに正直に書く。「自分が悪かった」と認める部分は認める\n・読者が「自分も気をつけよう」と思える教訓を最後に1行入れる\n${toneNote}`,
-          paid: false,
-        },
-        {
-          title: '失敗②③：繰り返したパターン',
-          desc: '2つ目・3つ目の失敗をまとめて語る',
-          prompt: `以下の情報をもとに、失敗談の「失敗②③」を書いてください。\n\n${baseCtx}\n\n【要件】\n・失敗② と失敗③ をそれぞれ書く（各3〜4行）\n・「①と共通するパターン」があれば指摘する（失敗の根本原因が見えてくる）\n・自分が「なぜ同じ失敗を繰り返したか」という内省を入れる\n${toneNote}`,
-          paid: true,
-        },
-        {
-          title: '失敗から学んだこと・変えたこと',
-          desc: '具体的に何を改めたかを語る',
-          prompt: `以下の情報をもとに、「失敗から学んだこと・変えたこと」を書いてください。\n\n${baseCtx}\n\n【要件】\n・失敗後に実際に変えた行動・考え方を具体的に書く\n・「失敗してよかった」とは書かない（安易な美談にしない）\n・「変えた結果どうなったか」を正直に書く（まだ途中でもOK）\n${toneNote}`,
-          paid: true,
-        },
-        {
-          title: 'まとめ＆読者へのメッセージ',
-          desc: '同じ失敗をしないための一言',
-          prompt: `以下の情報をもとに、失敗談記事のまとめを書いてください。\n\n${baseCtx}\n\n【要件】\n・「同じ失敗をしてほしくない」という気持ちで読者に向けて書く\n・「もし自分が最初からやり直せるなら何をするか」を1つだけ書く\n・自己批判で終わらず「でも続けている」という前向きな姿勢で締める\n・フォロー促しを自然に入れる\n${toneNote}\n${actionNote}\n${lineCtaNote}`,
-          paid: true,
-        },
-      ],
-    };
-
-    // ===== アフィリエイト記事 =====
-    const prod = affProduct || '【商品名】';
-    const prodDesc = affDesc || prod;
-    const prodPrice = affPrice || '【価格】';
-    const prodUrl = affUrl || '※ アフィリエイトURLをここに入れる';
-    const concepts = affConcepts || '【商品の核心コンセプトを入力してください】';
-    const tgt = affTarget || 'AIで副業を始めたが収益が出ていない人';
-
-    structures['アフィリエイト記事'] = [
-      {
-        title: 'リード（問題提起）',
-        desc: 'PAB型でターゲットの悩みを言語化',
-        prompt: `以下の情報をもとに、アフィリエイト記事のリード文を書いてください。\n\n対象読者: ${tgt}\n紹介商品: ${prodDesc}\n\n【要件】\n・最初の1〜2行で「AIを使っているのに稼げない」状態を具体的に描写する\n・「このまま続けると〇〇になる」という放置した場合の損失を書く\n・「この記事では${prod}から学んだことを正直に書く」と宣言して本論につなぐ\n・上から目線にならない。等身大の著者が語るトーン\n${toneNote}`,
-        paid: false,
-      },
-      {
-        title: '自分が抱えていた問題（Before）',
-        desc: '著者自身の体験で共感を獲得',
-        prompt: `以下の情報をもとに、「自分が抱えていた問題」を書いてください。\n\nテーマ: ${theme || 'AI副業・個人開発'}\n使ったツール: ${tools || 'AIツール全般'}\n\n【要件】\n・「AIで作れる、でも売れない」という状態を具体的なエピソードで語る\n・読者が「自分も同じだ」と感じる描写を入れる（ターゲット: ${tgt}）\n・自己批判しすぎず「当時の自分はこうだった」という距離感で\n${toneNote}`,
-        paid: false,
-      },
-      {
-        title: `${prod}との出会いと核心を1つ紹介`,
-        desc: '商品コンセプトを価値提供として解説',
-        prompt: `以下の情報をもとに、「${prod}との出会いと、学んだ核心コンセプト」を書いてください。\n\n商品: ${prodDesc}\n商品の核心コンセプト:\n${concepts}\n\n【要件】\n・${prod}を知ったきっかけを1〜2行で書く（自然な流れで）\n・上記コンセプトのうち最も刺さった1〜2個を選んで、具体的に解説する\n・「これを知ってから自分のAI副業の見え方が変わった」という変化を描写する\n・コンセプトの説明は読者がすぐ理解できる言葉で（専門用語を避ける）\n・ここが記事の価値提供の核心部分。出し惜しみしない\n${toneNote}`,
-        paid: false,
-      },
-      {
-        title: '正直なレビュー：向いている人・向いていない人',
-        desc: 'デメリットも含めた公正な評価で信頼を得る',
-        prompt: `以下の情報をもとに、${prod}の正直なレビューを書いてください。\n\n商品: ${prodDesc}\n価格: ${prodPrice}\n対象読者: ${tgt}\n\n【要件】\n・「よかった点」を2〜3つ、具体的に書く\n・「こんな人には合わないかも」というデメリット・注意点も正直に1〜2つ書く（信頼性が上がる）\n・「こんな人に特に向いている」というターゲット像を明確にする\n・「高い買い物だが、〇〇な人にとっては元が取れる」という費用対効果の視点を入れる\n${toneNote}`,
-        paid: false,
-      },
-      {
-        title: 'まとめ＆購入リンク',
-        desc: '自然な誘導で購入ページへ',
-        prompt: `以下の情報をもとに、記事のまとめと購入リンクの誘導文を書いてください。\n\n商品: ${prod}（${prodDesc}）\n価格: ${prodPrice}\nアフィリエイトURL: ${prodUrl}\n\n【要件】\n・記事の要点を2〜3行でまとめる\n・「もっと深く学びたい人へ」という切り出しで${prod}を紹介する\n・価格・内容・誰向けかを1〜2行で明示してからリンクを提示する\n・「今が一番安い」など購入の背中を押す一文を入れる（事実ベースで）\n・売り込みにならないよう「判断は読者に委ねる」姿勢を保つ\n・末尾にフォロー促しと次の記事予告を入れる\n\n▼ 最終的な購入リンク挿入場所:\n【👉 ${prod} — ${prodPrice}】\n${prodUrl}\n${toneNote}`,
-        paid: false,
-      },
-    ];
-
-    return structures[selectedType] || structures['実録系'];
-  }
-
-  // ===== 描画 =====
-  function renderTitles(titles) {
-    const el = document.getElementById('titlesList');
-    el.innerHTML = titles.map((t, i) => `
-      <div class="title-item">
-        <div class="title-num">${i+1}</div>
-        <div class="title-text">${t}</div>
-        <button class="copy-btn" onclick="copyText('${t.replace(/'/g,"\\'")}', this)">コピー</button>
-      </div>
-    `).join('');
-  }
-
-  function renderChapters(chapters) {
-    const el = document.getElementById('chaptersList');
-    let html = '';
-    let allText = '';
-    let paidLineInserted = false;
-
-    chapters.forEach((ch, i) => {
-      // 有料ライン挿入
-      if (isPaid && ch.paid && !paidLineInserted) {
-        html += `
-          <div class="paid-line">
-            <div class="paid-line-label">💴 ここから有料（${selectedPrice.toLocaleString()}円）</div>
-          </div>
-        `;
-        paidLineInserted = true;
+        try {
+          const json = JSON.parse(data);
+          if (json.type === 'content_block_delta' && json.delta?.type === 'text_delta') {
+            generatedArticle += json.delta.text;
+            outputEl.innerHTML = escapeHtml(generatedArticle) + '<span class="streaming-cursor"></span>';
+          }
+        } catch (_) {}
       }
+    }
 
-      const isPaidChapter = isPaid && ch.paid;
-      const promptId = `prompt-${i}`;
+    outputEl.innerHTML = escapeHtml(generatedArticle);
+    statusBar.style.display = 'none';
+    document.getElementById('statusText').textContent = 'Claudeが記事を生成中...';
 
-      html += `
-        <div class="chapter-item ${isPaidChapter ? 'paid-chapter' : ''}">
-          <div class="chapter-header">
-            <div class="chapter-badge">${isPaidChapter ? '有料' : '無料'}</div>
-            <div class="chapter-title">${ch.title}</div>
-            <button class="chapter-copy" onclick="copyChapter('${promptId}', this)">コピー</button>
-          </div>
-          <div class="chapter-prompt" id="${promptId}">${ch.prompt}</div>
-        </div>
-      `;
-
-      allText += `■ ${ch.title}\n${ch.prompt}\n\n`;
-    });
-
-    el.innerHTML = html;
-    allPromptsText = allText.trim();
+  } catch (err) {
+    statusBar.style.display = 'none';
+    const msg = err.message.includes('Failed to fetch')
+      ? 'APIへの接続に失敗しました。ブラウザのCORS設定またはAPIキーを確認してください。'
+      : `エラー: ${err.message}`;
+    showError(msg);
+    if (!generatedArticle) outputEl.innerHTML = '';
+  } finally {
+    isGenerating = false;
+    btn.disabled = false;
+    btn.textContent = '✨ 記事を生成する';
   }
+}
 
-  function copyChapter(id, btn) {
-    const text = document.getElementById(id).textContent;
-    navigator.clipboard.writeText(text).then(() => {
-      btn.textContent = 'コピー済み';
-      btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = 'コピー'; btn.classList.remove('copied'); }, 2000);
-    });
-  }
+// =====================================================
+// コピー
+// =====================================================
+function copyArticle() {
+  if (!generatedArticle) return;
+  const btn = document.getElementById('btnCopy');
+  navigator.clipboard.writeText(generatedArticle).then(() => {
+    btn.textContent = '✅ コピーしました';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '📋 全文コピー'; btn.classList.remove('copied'); }, 2500);
+  });
+}
+
+// =====================================================
+// ユーティリティ
+// =====================================================
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\n/g, '<br>');
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorBox');
+  el.textContent = '⚠️ ' + msg;
+  el.style.display = 'block';
+}
+
+function hideError() {
+  document.getElementById('errorBox').style.display = 'none';
+}
+
+// =====================================================
+// 初期化
+// =====================================================
+loadApiKey();
 </script>
 
 </body>
